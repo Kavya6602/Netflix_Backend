@@ -147,7 +147,7 @@ const userDelete = async (req, res, next) => {
             .promise()
             .execute(softDelete, [id]);
 
-            res.status(200).send({message:"Success"})
+        res.status(200).send({ message: "Success" })
 
     } catch (e) {
         console.error(e);
@@ -247,7 +247,7 @@ const deleteVideos = async (req, res, next) => {
             .promise()
             .execute(softDelete, [id]);
 
-            res.status(200).send({message: "Success"})
+        res.status(200).send({ message: "Success" })
     } catch (e) {
         console.error(e);
         res.status(500).send({ message: 'Internal server error' });
@@ -291,7 +291,7 @@ const getActorDetails = async (req, res, next) => {
     }
 }
 
-app.get("/actors", getActorDetails); 
+app.get("/actors", getActorDetails);
 
 const getActorById = async (req, res, next) => {
     try {
@@ -327,7 +327,7 @@ const getActorById = async (req, res, next) => {
     }
 }
 
-app.get("/actors/:id", getActorById); 
+app.get("/actors/:id", getActorById);
 
 const createActor = async (req, res, next) => {
     try {
@@ -339,7 +339,7 @@ const createActor = async (req, res, next) => {
                 message: "name is required"
             })
         }
-        const sqlstr = insert into actors (name, born_date) values (?,?)
+        const sqlstr = `insert into actors (name, born_date) values (?,?)`
         const [results] = await connection.promise().query(sqlstr, [name, born_date]);
 
         if (!results.insertId) {
@@ -362,7 +362,7 @@ const createActor = async (req, res, next) => {
     }
 }
 
-app.post("/actors", createActor); 
+app.post("/actors", createActor);
 
 const deleteActor = async (req, res, next) => {
     try {
@@ -374,12 +374,12 @@ const deleteActor = async (req, res, next) => {
                 message: "Id is required"
             })
         }
-        const sqlStr = delete from actors where id = ?
+        const sqlStr = `delete from actors where id = ?`
         const [results] = await connection.promise().execute(sqlStr, [id]);
 
-        if(!results.affectedRows === 1){
+        if (!results.affectedRows === 1) {
             res.send({
-                message : "data is not deleted"
+                message: "data is not deleted"
             })
         }
 
@@ -436,7 +436,7 @@ const getDirectorDetails = async (req, res, next) => {
     }
 }
 
-app.get("/directors", getDirectorDetails); 
+app.get("/directors", getDirectorDetails);
 
 const getDirectorById = async (req, res, next) => {
     try {
@@ -472,7 +472,7 @@ const getDirectorById = async (req, res, next) => {
     }
 }
 
-app.get("/directors/:id", getDirectorById); 
+app.get("/directors/:id", getDirectorById);
 
 const createDirector = async (req, res, next) => {
     try {
@@ -484,17 +484,17 @@ const createDirector = async (req, res, next) => {
                 message: "name is required"
             })
         }
-        if(!year){
+        if (!year) {
             res.send({
                 message: "year is required"
             })
         }
-        if(!image){
+        if (!image) {
             res.send({
                 message: "image is required"
             })
         }
-        const sqlstr = insert into directors (name, year, image) values (?,?,?)
+        const sqlstr = `insert into directors (name, year, image) values (?,?,?)`
         const [results] = await connection.promise().query(sqlstr, [name, year, image]);
 
         if (!results.insertId) {
@@ -517,7 +517,7 @@ const createDirector = async (req, res, next) => {
     }
 }
 
-app.post("/directors", createDirector); 
+app.post("/directors", createDirector);
 
 const deleteDirectorbyId = async (req, res, next) => {
     try {
@@ -529,12 +529,12 @@ const deleteDirectorbyId = async (req, res, next) => {
                 message: "Id is required"
             })
         }
-        const sqlStr = delete from directors where id = ?
+        const sqlStr = `delete from directors where id = ?`
         const [results] = await connection.promise().execute(sqlStr, [id]);
 
-        if(!results.affectedRows === 1){
+        if (!results.affectedRows === 1) {
             res.send({
-                message : "data is not deleted"
+                message: "data is not deleted"
             })
         }
 
@@ -559,22 +559,22 @@ const getCast = async (req, res, next) => {
     try {
         console.log(req.headers);
 
-        const {id,limit,offset} = req.query
+        const { id, limit, offset } = req.query
 
-        if(!id){
+        if (!id) {
             res.status(400).send({
-                message : "missing parameter"
+                message: "missing parameter"
             })
         }
-        const sqlStr = select * from casts limit = ? offset ?;
-        const [results] = await connection.promise().execute(sqlStr,[id,limit,offset])
+        const sqlStr = `select * from casts limit = ? offset ?;`
+        const [results] = await connection.promise().execute(sqlStr, [id, limit, offset])
 
         const countsql = 'select count(*) as count from actors'
         const [countResults] = await connection.promise().execute(countsql)
 
-        if(results.length === 0) {
+        if (results.length === 0) {
             res.send({
-                message : "cast not found"
+                message: "cast not found"
             })
         }
 
@@ -592,42 +592,59 @@ const getCast = async (req, res, next) => {
     }
 }
 
-app.get("/casts", getCast); 
+app.get("/casts", getCast);
 
-const getCastById = async (req,res,next) => {
+const getCastById = async (req, res, next) => {
     try {
         console.log(req.headers);
-        const {id} = req.params;
-    
-        if(!id){
-            res.status(400).send({
-                message : "Missing Parameter"
-            })
-        }
-    
-        const sql = select * from casts where id = ?;
-        const [results] = await connection.promise().execute(sql,[id])
+        const { id } = req.params;
 
-        if(results.length === 0){
-            res.send({
-                message : "no cast found"
+        if (!id) {
+            res.status(400).send({
+                message: "Missing Parameter"
             })
         }
-    
+
+        const sql = `select * from casts where id = ?;`
+        const [results] = await connection.promise().execute(sql, [id])
+
+        if (results.length === 0) {
+            res.send({
+                message: "no cast found"
+            })
+        }
+
         res.status(200).send({
-            message : "Casts list",
-            response : results
-        })  
+            message: "Casts list",
+            response: results
+        })
 
     } catch (error) {
-       console.log(error) ;
-       res.status(500).send({
-        message : "internal server error"
-       })
+        console.log(error);
+        res.status(500).send({
+            message: "internal server error"
+        })
     }
 }
 
-app.get("/casts/:id" , getCastById);
+app.get("/casts/:id", getCastById);
+
+const profileById = async (req, res, next) => {
+    try {
+        const { id } = req.query;
+
+        if (!id){
+            res.status(400).send({message: "ID required"})
+        }
+
+        const query = `SELECT id,name,type,`
+
+    } catch (e) {
+        console.error(e);
+        res.status(500).send({ message: 'Internal server error' })
+    }
+}
+
 
 
 
@@ -635,7 +652,7 @@ app.get("/casts/:id" , getCastById);
 
 //Users
 app.get('/users', getUsers);
-app.get('/user/profiles/:id', UserProfile)
+app.get('/user/:id/profiles/', UserProfile) //userprofile by id
 app.post('/users', createUsers);
 app.put('/users/:id', updateUsers);
 app.delete("/users/:id", userDelete);
@@ -645,3 +662,5 @@ app.post('/videos', createVideos);
 app.put('/videos/:id', updateVideos)
 app.delete("/videos/:id", deleteVideos);
 app.listen(3001, () => { console.log('Server is running') })
+//profile
+app.get('/profile/:id', profileById)
