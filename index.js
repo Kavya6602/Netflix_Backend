@@ -9,7 +9,7 @@ const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'Monterox@02',
-    database: 'netflix'
+    database: 'netflix1'
 });
 
 connection.connect(function (err) {
@@ -633,8 +633,8 @@ const profileById = async (req, res, next) => {
     try {
         const { id } = req.query;
 
-        if (!id){
-            res.status(400).send({message: "ID required"})
+        if (!id) {
+            res.status(400).send({ message: "ID required" })
         }
 
         const query = `SELECT id,name,type,`
@@ -646,9 +646,28 @@ const profileById = async (req, res, next) => {
 }
 
 
+const login = async (req, res) => {
+    try {
+        const { email, passward } = req.body
+        if (!email || !passward) {
+            // console.log(req.body)
+            return res.status(400).json({
+                message: "Email and password are required"
+            })
+        }
+        const query = `select email,passward from users where email=? and passward= ?`;
+        const [result] = await connection
+            .promise()
+            .query(query, [email, passward]);
+        res.status(200).send({ message: "Successful login", result: result })
 
+    } catch (e) {
+        console.error('Server internal  Error')
+        res.status(500).send(e)
+    }
+}
 
-
+app.get('/login',login);
 
 //Users
 app.get('/users', getUsers);
@@ -663,4 +682,5 @@ app.put('/videos/:id', updateVideos)
 app.delete("/videos/:id", deleteVideos);
 app.listen(3001, () => { console.log('Server is running') })
 //profile
-app.get('/profile/:id', profileById)
+app.get('/profile/:id', profileById);
+
