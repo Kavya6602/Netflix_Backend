@@ -19,18 +19,19 @@ const getActorDetails = async (req, res, next) => {
         const countsql = 'select count(*) as count from actors'
         const [countResults] = await connection.promise().execute(countsql)
 
-        res.send({
-            message: "actor-list",
-            response: results,
-            totalcount: countResults[0].count
-        })
-
         if (results.length === 0) {
             res.send({
                 message: "Actor not found"
             })
         }
 
+        res.send({
+            message: "actor-list",
+            response: results,
+            totalcount: countResults[0].count
+        })
+
+      
     } catch (error) {
         res.send({
             message: "internal error"
@@ -54,16 +55,17 @@ const getActorById = async (req, res, next) => {
         const [results] = await connection.promise().execute(sql, [id]);
         console.log(res);
 
-        res.status(200).send({
-            message: "actor list",
-            response: results
-        })
-
         if (results.length === 0) {
             res.send({
                 message: "actor not found"
             })
         }
+
+        res.status(200).send({
+            message: "actor list",
+            response: results
+        })
+       
     } catch (error) {
         console.log(error)
         res.status(500).send({

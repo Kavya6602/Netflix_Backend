@@ -141,27 +141,10 @@ const userDelete = async (req, res, next) => {
     }
 }
 
-const profileById = async (req, res, next) => {
-    try {
-        const { id } = req.query;
-
-        if (!id) {
-            res.status(400).send({ message: "ID required" })
-        }
-
-        const query = `SELECT id,name,type,`
-
-    } catch (e) {
-        console.error(e);
-        res.status(500).send({ message: 'Internal server error' })
-    }
-}
-
 router.get('/users', getUsers);
 router.get('/user/:id/profiles/', UserProfile) //userprofile by id
 router.post('/users', createUsers);
 router.put('/users/:id', updateUsers);
 router.delete("/users/:id", userDelete);
-router.get('/profile/:id', profileById);
 
 module.exports = router;
