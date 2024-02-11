@@ -1,14 +1,11 @@
 const express = require('express');
 const connection = require('./db');
+const { validateQueryParams,logRequest } = require('./middleware')
 const router = express.Router();
 
 const getVideos = async (req, res, next) => {
     try {
         const { limit, offset } = req.query;
-
-        if (!limit || !offset) {
-            res.status(400).send({ message: 'Invalid limit or offset values' })
-        }
 
         const query = `Select id,title,descrption,language,duration,release_date,video_type_id,casts_id,is_active from videos limit ? offset ?`;
 
@@ -29,7 +26,7 @@ const createVideos = async (req, res, next) => {
         const { id, title, descrption, language, duration, release_date } = req.body
 
         if (!id || !title || !descrption || !language || !duration || !release_date) {
-            res.status(400).json({ message: "Parameter is required" })
+            res.status(400).json({ message: "All parameter is required" })
         }
 
         const query = `insert into videos(id,title,descrption,language,duration,release_date) values(?,?,?,?,?,?);`
@@ -105,9 +102,9 @@ const deleteVideos = async (req, res, next) => {
     }
 }
 
-router.get('/videos', getVideos);
-router.post('/videos', createVideos);
-router.put('/videos/:id', updateVideos)
-router.delete("/videos/delete/:id", deleteVideos);
+router.get('/videos', logRequest,validateQueryParams,getVideos);
+router.post('/videos', logRequest,createVideos);
+router.put('/videos/:id', logRequest,updateVideos)
+router.delete("/videos/delete/:id", logRequest,deleteVideos);
 
 module.exports = router;
