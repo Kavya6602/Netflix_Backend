@@ -2,13 +2,22 @@ const express = require('express');
 const connection = require('./db');
 const router = express.Router();
 
+const logRequest = (req,res,next) => {
+    console.log(`[${new Date().toISOString()}]  Method: ${req.method}, URL: ${req.url}`);
+    next(); 
+}
+
+const validateQueryParams = (req,res,next) => {
+    const { limit, offset } = req.query;
+    if (!limit || !offset || limit < 0 || offset < 0) {
+      return res.status(400).send({ message: 'Invalid limit or offset values' });
+    }
+    next();
+}
+
 const getUsers = async (req, res, next) => {
     try {
-        const { limit, offset } = req.query
-        // console.log(req)
-        if (!limit || !offset || limit < 0 || offset < 0) {
-            return res.status(400).send({ message: 'Invalid limit or offset values' });
-        }
+        const { limit, offset } = req.query;
 
         const getMethod = `SELECT id,email,phone_no,is_active FROM users LIMIT ? OFFSET ?`;
 
@@ -141,7 +150,7 @@ const userDelete = async (req, res, next) => {
     }
 }
 
-router.get('/users', getUsers);
+router.get('/users', logRequest, validateQueryParams, getUsers);
 router.get('/user/:id/profiles/', UserProfile) //userprofile by id
 router.post('/users', createUsers);
 router.put('/users/:id', updateUsers);
