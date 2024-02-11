@@ -1,16 +1,12 @@
 const express = require('express');
 const connection = require('./db');
+const { logRequest,validateQueryParams } = require('./middleware')
 const router = express.Router();
 
 const getCast = async (req, res, next) => {
     try {
         const {  limit, offset } = req.query
 
-        if (!limit || !offset) {
-            res.status(400).send({
-                message: "Limit and offset must be specified"
-            })
-        }
         const sqlStr = `select  from casts limit = ? offset ?;`
         const [results] = await connection.promise().execute(sqlStr, [id, limit, offset])
 
@@ -169,10 +165,10 @@ const deleteCast = async(req,res) => {
 }
 
 
-router.get("/casts", getCast);
-router.get("/casts/:id", getCastById);
-router.post('/casts',createNewCast);
-router.put('/casts/:id',updateCast);
-router.delete('/casts/:id',deleteCast)
+router.get("/casts",logRequest,validateQueryParams,getCast);
+router.get("/casts/:id", logRequest,getCastById);
+router.post('/casts',logRequest,createNewCast);
+router.put('/casts/:id',logRequest, updateCast);
+router.delete('/casts/:id',logRequest, deleteCast)
 
 module.exports = router

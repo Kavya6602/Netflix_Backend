@@ -1,6 +1,6 @@
 const express = require('express');
 const connection = require('./db');
-const { validateQueryParams,logRequest } = require('./middleware')
+const { logRequest,validateQueryParams } = require('./middleware')
 const router = express.Router();
 
 const getVideos = async (req, res, next) => {
